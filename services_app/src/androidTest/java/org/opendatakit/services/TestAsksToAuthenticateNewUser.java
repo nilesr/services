@@ -11,6 +11,7 @@ import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
 import org.hamcrest.core.IsInstanceOf;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -32,7 +33,7 @@ public class TestAsksToAuthenticateNewUser {
       MainActivity.class);
 
   @Test
-  public void testAsksToAuthenticateNewUser() {
+  public void testAsksToAuthenticateNewUser() throws Exception {
     ViewInteraction overflowMenuButton = onView(
         allOf(withContentDescription("More options"), isDisplayed()));
     overflowMenuButton.perform(click());
@@ -62,6 +63,7 @@ public class TestAsksToAuthenticateNewUser {
     ViewInteraction editText = onView(allOf(withId(android.R.id.edit),
         withParent(withClassName(is("android.widget.LinearLayout")))));
     editText.perform(scrollTo(), click());
+    editText.perform(typeTextIntoFocusedView("new username"));
 
     ViewInteraction button = onView(
         allOf(withId(android.R.id.button1), withText("OK"), isDisplayed()));
@@ -69,9 +71,7 @@ public class TestAsksToAuthenticateNewUser {
 
     pressBack();
 
-    ViewInteraction frameLayout = onView(
-        allOf(IsInstanceOf.<View>instanceOf(android.widget.FrameLayout.class), isDisplayed()));
-    frameLayout.check(matches(isDisplayed()));
+    Thread.sleep(500);
 
     ViewInteraction textView2 = onView(
         allOf(IsInstanceOf.<View>instanceOf(android.widget.TextView.class),
@@ -106,4 +106,28 @@ public class TestAsksToAuthenticateNewUser {
       }
     };
   }
+
+  @Before
+  public void setUp() throws Exception {
+    ViewInteraction overflowMenuButton = onView(
+        allOf(withContentDescription("More options"), isDisplayed()));
+    overflowMenuButton.perform(click());
+
+    ViewInteraction textView = onView(
+        allOf(withId(android.R.id.title), withText("Settings"), isDisplayed()));
+    textView.perform(click());
+
+    ViewInteraction linearLayout = onView(allOf(childAtPosition(allOf(withId(android.R.id.list),
+        withParent(withClassName(is("android.widget.LinearLayout")))), 5), isDisplayed()));
+    linearLayout.perform(click());
+
+    ViewInteraction button = onView(
+        allOf(withId(android.R.id.button1), withText("OK"), isDisplayed()));
+    button.perform(click());
+
+    Thread.sleep(1000);
+
+    pressBack();
+  }
+
 }
